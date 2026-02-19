@@ -1,5 +1,17 @@
 <template>
-    <div>
-        <h1>Projects</h1>
+    <div class="card">
+        <h2>Projects</h2>
+        <p class="muted">Manage your projects here.</p>
     </div>
 </template>
+<style scoped>
+.card {
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #fff;
+}
+.muted {
+    color: var(--muted);
+}
+</style>
