@@ -8,12 +8,12 @@
             <span class="k">Status</span>
             <span class="v" v-if="loading">Loading...</span>
             <span class="v" v-else-if="error">Error: {{ error.message }}</span>
-            <span class="v" v-else>{{ data?.user?.status }}</span>
+            <span class="v" v-else>Connected</span>
         </div>
         
-        <div v-if="data?.user" class="row">
+        <div v-if="user" class="row">
             <span class="k">Sample User</span>
-            <span class="v">{{ data.user.id }} - {{ data.user.name }} - {{ data.user.username }}</span>
+            <span class="v">{{ user.id }} - {{ user.name }} - {{ user.username }}</span>
         </div>
 
         <div class="hint">This is a sample user fetched from the GraphQL API.</div>
@@ -33,24 +33,15 @@
         <div class="k">Approach</div>
         <div class="v">Querying with Apollo Client</div>
       </div>
+
+      <button class="btn" @click="refetch()">Refetch</button>
     </div>
   </div>
 </template>
-<script setup>
-import { useQuery } from '@vue/apollo-composable'
-import { gql } from '@apollo/client/core'
+<script setup lang="ts">
+import { useSampleUserQuery } from '../composables/users/useSampleUserQuery'
 
-const GET_SAMPLE_USER = gql`
-  query GetSampleUser($id: ID!) {
-    user(id: $id) {
-      id
-      name
-      username
-    }
-  }
-`
-
-const { result: data, loading, error } = useQuery(GET_SAMPLE_USER, { id: '1' })
+const { user, loading, error, refetch } = useSampleUserQuery(`${Math.floor(Math.random() * 10)}`)
 </script>
 <style scoped>
 .card {
