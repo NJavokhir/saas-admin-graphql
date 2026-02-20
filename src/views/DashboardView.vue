@@ -3,45 +3,58 @@
     <h2>Welcome to the Dashboard</h2>
     <p>Here you can find an overview of your application.</p>
 
-    <div class="box">
+    <QueryState
+      :loading="loading"
+      :error="error"
+      :isEmpty="!user"
+      @retry="refetch()"
+    >
+      <div class="box">
         <div class="row">
-            <span class="k">Status</span>
-            <span class="v" v-if="loading">Loading...</span>
-            <span class="v" v-else-if="error">Error: {{ error.message }}</span>
-            <span class="v" v-else>Connected</span>
+          <span class="k">Status</span>
+          <span class="v" v-if="loading">Loading...</span>
+          <span class="v" v-else-if="error">Error: {{ error.message }}</span>
+          <span class="v" v-else>Connected</span>
         </div>
-        
+
         <div v-if="user" class="row">
-            <span class="k">Sample User</span>
-            <span class="v">{{ user.id }} - {{ user.name }} - {{ user.username }}</span>
+          <span class="k">Sample User</span>
+          <span class="v"
+            >{{ user.id }} - {{ user.name }} - {{ user.username }}</span
+          >
         </div>
 
-        <div class="hint">This is a sample user fetched from the GraphQL API.</div>
-    </div>
-
-
-    <div class="grid">
-      <div class="mini">
-        <div class="k">Client</div>
-        <div class="v">Apollo Client</div>
-      </div>
-      <div class="mini">
-        <div class="k">Endpoint</div>
-        <div class="v">https://graphqlzero.almansi.me/api</div>
-      </div>
-      <div class="mini">
-        <div class="k">Approach</div>
-        <div class="v">Querying with Apollo Client</div>
+        <div class="hint">
+          This is a sample user fetched from the GraphQL API.
+        </div>
       </div>
 
-      <button class="btn" @click="refetch()">Refetch</button>
-    </div>
+      <div class="grid">
+        <div class="mini">
+          <div class="k">Client</div>
+          <div class="v">Apollo Client</div>
+        </div>
+        <div class="mini">
+          <div class="k">Endpoint</div>
+          <div class="v">https://graphqlzero.almansi.me/api</div>
+        </div>
+        <div class="mini">
+          <div class="k">Approach</div>
+          <div class="v">Querying with Apollo Client</div>
+        </div>
+
+        <button class="btn" @click="refetch()">Refetch</button>
+      </div>
+    </QueryState>
   </div>
 </template>
 <script setup lang="ts">
-import { useSampleUserQuery } from '../composables/users/useSampleUserQuery'
+import QueryState from "../components/QueryState.vue";
+import { useSampleUserQuery } from "../composables/users/useSampleUserQuery";
 
-const { user, loading, error, refetch } = useSampleUserQuery(`${Math.floor(Math.random() * 10)}`)
+const { user, loading, error, refetch } = useSampleUserQuery(
+  `${Math.floor(Math.random() * 10)}`,
+);
 </script>
 <style scoped>
 .card {
@@ -111,5 +124,20 @@ h2 {
   .grid {
     grid-template-columns: 1fr;
   }
+}
+
+
+.btn {
+  margin-top: 10px;
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 10px;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.btn:hover {
+  background: #f3f4f6;
 }
 </style>
