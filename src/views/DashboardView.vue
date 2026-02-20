@@ -19,8 +19,11 @@
 
         <div v-if="user" class="row">
           <span class="k">Sample User</span>
+          <!-- <span class="v"
+            >{{ post.id }} - {{ post.title }} - {{ post.body }}</span
+          > -->
           <span class="v"
-            >{{ user.id }} - {{ user.name }} - {{ user.username }}</span
+            >{{ user?.id }} - {{ user?.name }} - {{ user?.username }}</span
           >
         </div>
 
@@ -51,6 +54,9 @@
 <script setup lang="ts">
 import QueryState from "../components/QueryState.vue";
 import { useSampleUserQuery } from "../composables/users/useSampleUserQuery";
+// import { useSamplePostQuery } from "../composables/posts/userSamplePostQuery";
+
+// const { post, loading, error, refetch } = useSamplePostQuery(`${Math.floor(Math.random() * 10)}`); 
 
 const { user, loading, error, refetch } = useSampleUserQuery(
   `${Math.floor(Math.random() * 10)}`,
