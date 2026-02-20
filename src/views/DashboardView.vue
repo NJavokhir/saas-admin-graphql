@@ -58,9 +58,7 @@ import { useSampleUserQuery } from "../composables/users/useSampleUserQuery";
 
 // const { post, loading, error, refetch } = useSamplePostQuery(`${Math.floor(Math.random() * 10)}`); 
 
-const { user, loading, error, refetch } = useSampleUserQuery(
-  `${Math.floor(Math.random() * 10)}`,
-);
+const { user, loading, error, refetch } = useSampleUserQuery('2');
 </script>
 <style scoped>
 .card {
