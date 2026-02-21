@@ -12,3 +12,12 @@ export interface Project {
     body?: string;
     userId?: ID;
 }
+
+export interface PageMeta {
+    totalCount: number;
+}
+
+export interface PagedUser {
+    data: User[];
+    meta: PageMeta;
+}

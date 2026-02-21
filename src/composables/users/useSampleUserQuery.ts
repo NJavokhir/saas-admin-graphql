@@ -1,21 +1,33 @@
 import { useQuery } from "@vue/apollo-composable";
 import { computed, toValue, type Ref } from "vue";
-import { GET_SAMPLE_USER } from "../../graphql/queries/user.queries";
-import type { User } from "../../domain/types";
-import { mapUser } from "../../domain/mappers";
+import { GET_USERS } from "../../graphql/queries/user.queries";
+import type { User, PagedUser } from "../../domain/types";
+import { mapPagedUser } from "../../domain/mappers";
 
-export function useSampleUserQuery(id: string | Ref<string>) {
-  const variables = computed(() => ({ id: toValue(id) }));
+export function useUserQuery(page: Ref<number>, limit: Ref<number>) {
+  const variables = computed(() => ({ page: toValue(page), limit: toValue(limit) }));
 
-  const query = useQuery(GET_SAMPLE_USER, variables);
+  const query = useQuery(GET_USERS, variables);
 
-  const user = computed<User | null>(() => {
-    const raw = query.result.value?.user;
-    return raw ? mapUser(raw) : null;
+  const paged = computed<PagedUser>(() => mapPagedUser(query.result.value?.users));
+
+  const users = computed<User[]>(() => paged.value.data);
+  const totalCount = computed<number>(() => paged.value.meta.totalCount);
+
+  const totalPages = computed(() => {
+    const l = limit.value || 1;
+    return Math.max(Math.ceil(totalCount.value / l));
   });
 
+  const hasPrev = computed(() => page.value > 1);
+  const hasNext = computed(() => page.value < totalPages.value);
+  
   return {
-    user,
+    users,
+    totalCount,
+    totalPages,
+    hasPrev,
+    hasNext,
     loading: query.loading,
     error: query.error,
     refetch: query.refetch,

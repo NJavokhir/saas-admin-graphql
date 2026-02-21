@@ -3,62 +3,81 @@
     <h2>Welcome to the Dashboard</h2>
     <p>Here you can find an overview of your application.</p>
 
+    <div class="controls">
+        <label class="control">
+            <span class="label">Limit</span>
+            <select v-model.number="limit">
+                <option :value="5">5</option>
+                <option :value="10">10</option>
+                <option :value="20">20</option>
+            </select>
+        </label>
+    </div>
+
     <QueryState
       :loading="loading"
       :error="error"
-      :isEmpty="!user"
+      :isEmpty="users.length === 0"
       @retry="refetch()"
     >
-      <div class="box">
-        <div class="row">
-          <span class="k">Status</span>
-          <span class="v" v-if="loading">Loading...</span>
-          <span class="v" v-else-if="error">Error: {{ error.message }}</span>
-          <span class="v" v-else>Connected</span>
+
+      <div class="card">
+        <div class="table">
+            <div class="thead">
+                <div>ID</div>
+                <div>Name</div>
+                <div>Username</div>
+            </div>
         </div>
 
-        <div v-if="user" class="row">
-          <span class="k">Sample User</span>
-          <!-- <span class="v"
-            >{{ post.id }} - {{ post.title }} - {{ post.body }}</span
-          > -->
-          <span class="v"
-            >{{ user?.id }} - {{ user?.name }} - {{ user?.username }}</span
-          >
-        </div>
-
-        <div class="hint">
-          This is a sample user fetched from the GraphQL API.
+        <div class="row" v-for="u in users" :key="u.id">
+            <div class="mono">{{ u.id }}</div>
+            <div class="strong">{{ u.name }}</div>
+            <div class="muted">{{ u.username }}</div>
         </div>
       </div>
 
-      <div class="grid">
-        <div class="mini">
-          <div class="k">Client</div>
-          <div class="v">Apollo Client</div>
+      <div class="pager">
+        <button class="btn" :disabled="!hasPrev" @click="prev">Prev</button>
+        <div class="meta">
+            Page <b>{{ page }}</b> of <b>{{ totalPages }}</b>
         </div>
-        <div class="mini">
-          <div class="k">Endpoint</div>
-          <div class="v">https://graphqlzero.almansi.me/api</div>
-        </div>
-        <div class="mini">
-          <div class="k">Approach</div>
-          <div class="v">Querying with Apollo Client</div>
-        </div>
+        <button class="btn" :disabled="!hasNext" @click="next">Next</button>
+      </div>
 
+      <div class="grid">
         <button class="btn" @click="refetch()">Refetch</button>
       </div>
     </QueryState>
   </div>
 </template>
 <script setup lang="ts">
+import { ref, watch } from "vue";
 import QueryState from "../components/QueryState.vue";
-import { useSampleUserQuery } from "../composables/users/useSampleUserQuery";
+import { useUserQuery } from "../composables/users/useSampleUserQuery";
 // import { useSamplePostQuery } from "../composables/posts/userSamplePostQuery";
 
 // const { post, loading, error, refetch } = useSamplePostQuery(`${Math.floor(Math.random() * 10)}`); 
+const page = ref(1);
+const limit = ref(20);
 
-const { user, loading, error, refetch } = useSampleUserQuery('2');
+const { users, totalCount, totalPages, hasPrev, hasNext, loading, error, refetch } = useUserQuery(page, limit);
+
+watch(limit, () => {
+    page.value = 1;
+});
+
+function prev() {
+    if (hasPrev.value) {
+        page.value--;
+    }
+}
+
+function next() {
+    if (hasNext.value) {
+        page.value++;
+    }
+}
 </script>
 <style scoped>
 .card {
