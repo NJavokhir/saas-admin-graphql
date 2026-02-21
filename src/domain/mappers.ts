@@ -18,6 +18,9 @@ export function mapUser(input: unknown): User {
       id: "",
       name: "",
       username: "",
+      email: "",
+      phone: "",
+      website: "",
     };
   }
 
@@ -25,6 +28,9 @@ export function mapUser(input: unknown): User {
     id: asString(input.id),
     name: asString(input.name),
     username: asString(input.username),
+    email: asString(input.email, ""),
+    phone: asString(input.phone, ""),
+    website: asString(input.website),
   };
 }
 

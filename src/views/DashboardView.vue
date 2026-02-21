@@ -4,14 +4,14 @@
     <p>Here you can find an overview of your application.</p>
 
     <div class="controls">
-        <label class="control">
-            <span class="label">Limit</span>
-            <select v-model.number="limit">
-                <option :value="5">5</option>
-                <option :value="10">10</option>
-                <option :value="20">20</option>
-            </select>
-        </label>
+      <label class="control">
+        <span class="label">Limit</span>
+        <select v-model.number="limit">
+          <option :value="5">5</option>
+          <option :value="10">10</option>
+          <option :value="20">20</option>
+        </select>
+      </label>
     </div>
 
     <QueryState
@@ -20,27 +20,26 @@
       :isEmpty="users.length === 0"
       @retry="refetch()"
     >
-
       <div class="card">
         <div class="table">
-            <div class="thead">
-                <div>ID</div>
-                <div>Name</div>
-                <div>Username</div>
-            </div>
+          <div class="thead">
+            <div>ID</div>
+            <div>Name</div>
+            <div>Username</div>
+          </div>
         </div>
 
-        <div class="row" v-for="u in users" :key="u.id">
-            <div class="mono">{{ u.id }}</div>
-            <div class="strong">{{ u.name }}</div>
-            <div class="muted">{{ u.username }}</div>
-        </div>
+        <button class="row rowBtn" v-for="u in users" :key="u.id" @click="openUser(u.id)">
+          <div class="mono">{{ u.id }}</div>
+          <div class="strong">{{ u.name }}</div>
+          <div class="muted">{{ u.username }}</div>
+        </button>
       </div>
 
       <div class="pager">
         <button class="btn" :disabled="!hasPrev" @click="prev">Prev</button>
         <div class="meta">
-            Page <b>{{ page }}</b> of <b>{{ totalPages }}</b>
+          Page <b>{{ page }}</b> of <b>{{ totalPages }}</b>
         </div>
         <button class="btn" :disabled="!hasNext" @click="next">Next</button>
       </div>
@@ -55,28 +54,44 @@
 import { ref, watch } from "vue";
 import QueryState from "../components/QueryState.vue";
 import { useUserQuery } from "../composables/users/useSampleUserQuery";
+import { useRouter } from "vue-router";
 // import { useSamplePostQuery } from "../composables/posts/userSamplePostQuery";
 
-// const { post, loading, error, refetch } = useSamplePostQuery(`${Math.floor(Math.random() * 10)}`); 
+// const { post, loading, error, refetch } = useSamplePostQuery(`${Math.floor(Math.random() * 10)}`);
 const page = ref(1);
 const limit = ref(20);
 
-const { users, totalCount, totalPages, hasPrev, hasNext, loading, error, refetch } = useUserQuery(page, limit);
+const {
+  users,
+  totalCount,
+  totalPages,
+  hasPrev,
+  hasNext,
+  loading,
+  error,
+  refetch,
+} = useUserQuery(page, limit);
 
 watch(limit, () => {
-    page.value = 1;
+  page.value = 1;
 });
 
 function prev() {
-    if (hasPrev.value) {
-        page.value--;
-    }
+  if (hasPrev.value) {
+    page.value--;
+  }
 }
 
 function next() {
-    if (hasNext.value) {
-        page.value++;
-    }
+  if (hasNext.value) {
+    page.value++;
+  }
+}
+
+const router = useRouter()
+
+function openUser(id: string) {
+    router.push(`/users/${id}`)
 }
 </script>
 <style scoped>
@@ -149,7 +164,6 @@ h2 {
   }
 }
 
-
 .btn {
   margin-top: 10px;
   border: 1px solid var(--border);
@@ -162,5 +176,19 @@ h2 {
 
 .btn:hover {
   background: #f3f4f6;
+}
+
+.rowBtn {
+    width: 100%;
+    text-align: left;
+    background: #fff;
+    cursor: pointer;
+    padding: 8px;
+    border: 1px solid var(--border);
+    margin: 4px 0;
+}
+
+.rowBtn:hover {
+    background: #f9fafb;
 }
 </style>

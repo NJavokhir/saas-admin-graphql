@@ -30,6 +30,11 @@ const routes: Array<RouteRecordRaw> = [
     name: 'comments',
     component: () => import('../views/CommentsView.vue')
   },
+  {
+    path: '/users/:id',
+    name: 'user-details',
+    component: () => import('../views/UserDetailsView.vue')
+  },
   { path: '/:pathMatch(.*)*', redirect: '/dashboard' }
 ];
 
