@@ -4,12 +4,22 @@ import { GET_USERS } from "../../graphql/queries/user.queries";
 import type { User, PagedUser } from "../../domain/types";
 import { mapPagedUser } from "../../domain/mappers";
 
-export function useUserQuery(page: Ref<number>, limit: Ref<number>) {
-  const variables = computed(() => ({ page: toValue(page), limit: toValue(limit) }));
+export function useUserQuery(
+  page: Ref<number>,
+  limit: Ref<number>,
+  q: Ref<string>,
+) {
+  const variables = computed(() => ({
+    page: toValue(page),
+    limit: toValue(limit),
+    q: q.value.trim(),
+  }));
 
   const query = useQuery(GET_USERS, variables);
 
-  const paged = computed<PagedUser>(() => mapPagedUser(query.result.value?.users));
+  const paged = computed<PagedUser>(() =>
+    mapPagedUser(query.result.value?.users),
+  );
 
   const users = computed<User[]>(() => paged.value.data);
   const totalCount = computed<number>(() => paged.value.meta.totalCount);
@@ -21,7 +31,7 @@ export function useUserQuery(page: Ref<number>, limit: Ref<number>) {
 
   const hasPrev = computed(() => page.value > 1);
   const hasNext = computed(() => page.value < totalPages.value);
-  
+
   return {
     users,
     totalCount,

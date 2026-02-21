@@ -3,6 +3,26 @@
     <h2>Welcome to the Dashboard</h2>
     <p>Here you can find an overview of your application.</p>
 
+    <label for="" class="control grow">
+      <span class="label">Search</span>
+      <div class="searchRow">
+        <input
+          class="input"
+          v-model="search"
+          placeholder="Search users"
+          autocomplete="off"
+        />
+        <button
+          class="btn"
+          type="button"
+          @click="clearSearch"
+          :disabled="!search"
+        >
+          Clear
+        </button>
+      </div>
+    </label>
+
     <div class="controls">
       <label class="control">
         <span class="label">Limit</span>
@@ -29,7 +49,12 @@
           </div>
         </div>
 
-        <button class="row rowBtn" v-for="u in users" :key="u.id" @click="openUser(u.id)">
+        <button
+          class="row rowBtn"
+          v-for="u in users"
+          :key="u.id"
+          @click="openUser(u.id)"
+        >
           <div class="mono">{{ u.id }}</div>
           <div class="strong">{{ u.name }}</div>
           <div class="muted">{{ u.username }}</div>
@@ -55,11 +80,16 @@ import { ref, watch } from "vue";
 import QueryState from "../components/QueryState.vue";
 import { useUserQuery } from "../composables/users/useSampleUserQuery";
 import { useRouter } from "vue-router";
+import { useDebouncedRef } from "../composables/useDebouncedRef";
 // import { useSamplePostQuery } from "../composables/posts/userSamplePostQuery";
 
 // const { post, loading, error, refetch } = useSamplePostQuery(`${Math.floor(Math.random() * 10)}`);
 const page = ref(1);
 const limit = ref(20);
+
+const search = ref("");
+
+const q = useDebouncedRef(search, 350);
 
 const {
   users,
@@ -70,7 +100,7 @@ const {
   loading,
   error,
   refetch,
-} = useUserQuery(page, limit);
+} = useUserQuery(page, limit, q);
 
 watch(limit, () => {
   page.value = 1;
@@ -88,10 +118,14 @@ function next() {
   }
 }
 
-const router = useRouter()
+const router = useRouter();
 
 function openUser(id: string) {
-    router.push(`/users/${id}`)
+  router.push(`/users/${id}`);
+}
+
+function clearSearch() {
+  search.value = "";
 }
 </script>
 <style scoped>
@@ -179,16 +213,16 @@ h2 {
 }
 
 .rowBtn {
-    width: 100%;
-    text-align: left;
-    background: #fff;
-    cursor: pointer;
-    padding: 8px;
-    border: 1px solid var(--border);
-    margin: 4px 0;
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  cursor: pointer;
+  padding: 8px;
+  border: 1px solid var(--border);
+  margin: 4px 0;
 }
 
 .rowBtn:hover {
-    background: #f9fafb;
+  background: #f9fafb;
 }
 </style>
